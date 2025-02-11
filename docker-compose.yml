@@ -1,8 +1,7 @@
-version: '3.4'
 
 services:
   teamtools:
-    image: teamtools
+
     build:
       context: .
       dockerfile: ./Dockerfile
