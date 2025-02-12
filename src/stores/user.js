@@ -1,5 +1,24 @@
 import { defineStore } from 'pinia'
 import { useStorage } from '@vueuse/core'
+import { useSessionStorage } from '@vueuse/core';
+
+export function useUserSession() {
+  const userSessions = useSessionStorage('user-sessions', []);
+
+  const addUserSession = (sessionData) => {
+    userSessions.value.push(sessionData);
+  };
+
+  const clearUserSessions = () => {
+    userSessions.value = [];
+  };
+
+  return {
+    userSessions,
+    addUserSession,
+    clearUserSessions,
+  };
+}
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -9,8 +28,7 @@ export const useUserStore = defineStore('user', {
   }),
   
   actions: {
-    login(username) {
-      const sessionId = Date.now().toString(); // Generate a unique session ID
+    login(username, sessionId) {
       this.username = username;
       this.sessionId = sessionId;
 
@@ -25,7 +43,7 @@ export const useUserStore = defineStore('user', {
 
       // Remove user from the list
       let users = this.users || [];
-      users = users.filter(user => user.sessionId !== this.sessionId);
+      users = users.filter(user => user.username !== this.username || user.sessionId !== this.sessionId);
 
       // Clear user data
       this.username = null;
@@ -41,7 +59,7 @@ export const useUserStore = defineStore('user', {
       const storedUsername = localStorage.getItem('username');
       const storedSessionId = localStorage.getItem('sessionId');
       const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
-
+ con
       if (storedUsername && storedSessionId) {
       this.username = storedUsername;
       this.sessionId = storedSessionId;
@@ -60,7 +78,7 @@ export const useUserStore = defineStore('user', {
       localStorage.removeItem('sessionId');
       localStorage.removeItem('users');
     },
-    
+
     getAllUsers() {
       return JSON.parse(sessionStorage.getItem('users') || '[]');
     }
