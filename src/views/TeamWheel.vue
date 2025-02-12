@@ -3,11 +3,11 @@
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <!-- Navigation -->
       <div class="mb-6 flex justify-between items-center">
-        <router-link to="/" class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
+        <router-link to="/" class="inline-flex items-center px-4 py-2 bg-gray-600 text-blue-900 rounded-md hover:bg-gray-700">
           <span class="mr-2">←</span> Back to Home
         </router-link>
         <div class="text-gray-600">
-          Logged in as: <span class="font-semibold">{{ userStore.username }}</span>
+          Logged in as: <span class="font-semibold text-blue-900">{{ username }}</span>
         </div>
       </div>
 

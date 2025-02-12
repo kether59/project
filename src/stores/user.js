@@ -1,24 +1,44 @@
 import { defineStore } from 'pinia'
-import Cookies from 'js-cookie'
+import { useStorage } from '@vueuse/core'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    username: Cookies.get('username') || null
+    username: useStorage('username', null),
+    sessionId: useStorage('sessionId', null),
+    users: useStorage('users', []), // Store all connected users
   }),
   
   actions: {
     login(username) {
-      this.username = username
-      Cookies.set('username', username, { expires: 7 })
+      const sessionId = Date.now().toString(); // Generate a unique session ID
+      this.username = username;
+      this.sessionId = sessionId;
+
+      // Add user to the list of connected users
+      let users = this.users || [];
+      users.push({ username, sessionId });
+      this.users = users;
     },
     
     logout() {
-      this.username = null
-      Cookies.remove('username')
+      if (!this.username || !this.sessionId) return;
+
+      // Remove user from the list
+      let users = this.users || [];
+      users = users.filter(user => user.sessionId !== this.sessionId);
+
+      // Clear user data
+      this.username = null;
+      this.sessionId = null;
+      this.users = users;
     },
-    
+
     isLoggedIn() {
-      return !!this.username
+      return !!this.username;
+    },
+
+    getAllUsers() {
+      return this.users;
     }
   }
 })

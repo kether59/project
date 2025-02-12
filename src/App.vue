@@ -22,7 +22,15 @@
       </div>
     </div>
   </div>
-  <router-view v-else></router-view>
+  <div v-else>
+    <button 
+      @click="logout"
+      class="absolute top-4 right-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+    >
+      Logout
+    </button>
+    <router-view></router-view>
+  </div>
 </template>
 
 <script setup>
@@ -45,5 +53,13 @@ const login = () => {
     wheelStore.addTeammate(username.value.trim())
     router.push('/')
   }
+}
+
+const logout = () => {
+  userStore.logout()
+  pokerStore.removePlayer(username.value.trim())
+  wheelStore.removeTeammate(username.value.trim())
+  username.value = ''
+  router.push('/')
 }
 </script>

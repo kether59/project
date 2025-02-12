@@ -20,6 +20,7 @@ export const usePokerStore = defineStore('poker', {
         feature,
         name,
         createdAt: new Date(),
+        players: [], // Track players in the session
         votes: {},
         revealed: false
       }
@@ -30,7 +31,9 @@ export const usePokerStore = defineStore('poker', {
     },
     
     setPlayer(name) {
-      this.playerId = this.playerId || uuidv4()
+      if (!this.playerId) {
+        this.playerId = uuidv4()
+      }
       this.playerName = name
       Cookies.set('playerId', this.playerId, { expires: 7 })
       Cookies.set('playerName', name, { expires: 7 })
@@ -48,13 +51,30 @@ export const usePokerStore = defineStore('poker', {
       return null
     },
     
-    vote(sessionId, value) {
+    addPlayerToSession(sessionId, playerName) {
+      const session = this.sessions.find(s => s.id === sessionId)
+      if (session) {
+        const playerExists = session.players.some(player => player.name === playerName)
+        if (!playerExists) {
+          session.players.push({ id: uuidv4(), name: playerName })
+        }
+      }
+    },
+
+    removePlayerFromSession(sessionId, playerName) {
+      const session = this.sessions.find(s => s.id === sessionId)
+      if (session) {
+        session.players = session.players.filter(player => player.name !== playerName)
+      }
+    },
+
+    vote(sessionId, playerName, value) {
       if (!this.votes[sessionId]) {
         this.votes[sessionId] = {}
       }
-      this.votes[sessionId][this.playerId] = {
+      this.votes[sessionId][playerName] = {
         value,
-        playerName: this.playerName
+        playerName
       }
     },
     
@@ -70,8 +90,11 @@ export const usePokerStore = defineStore('poker', {
     },
 
     leaveSession() {
-      this.currentSession = null
-      Cookies.remove('currentSessionId')
+      if (this.currentSession) {
+        this.removePlayerFromSession(this.currentSession.id, this.playerName)
+        this.currentSession = null
+        Cookies.remove('currentSessionId')
+      }
     }
   }
 })
