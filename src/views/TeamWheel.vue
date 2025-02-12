@@ -2,10 +2,13 @@
   <div class="min-h-screen bg-gray-100">
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <!-- Navigation -->
-      <div class="mb-6">
+      <div class="mb-6 flex justify-between items-center">
         <router-link to="/" class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
           <span class="mr-2">←</span> Back to Home
         </router-link>
+        <div class="text-gray-600">
+          Logged in as: <span class="font-semibold">{{ userStore.username }}</span>
+        </div>
       </div>
 
       <!-- Winner Announcement -->
@@ -91,10 +94,12 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useWheelStore } from '../stores/wheel'
+import { useUserStore } from '../stores/user'
 import confetti from 'canvas-confetti'
 import WheelV2 from './WheelV2.vue'
 
 const store = useWheelStore()
+const userStore = useUserStore()
 const newMember = ref('')
 const wheelRef = ref(null)
 const MIN_SEGMENTS = 8
@@ -157,20 +162,3 @@ const spin = async () => {
   }
 }
 </script>
-```
-
-Key changes made:
-
-1. Reorganized the layout into a two-column grid using `grid-cols-1 md:grid-cols-2`
-2. Moved the wheel to the left column
-3. Moved team management to the right column
-4. Added a large winner announcement at the top with animation
-5. Improved the team members list with better spacing and hover effects
-6. Added a scrollable container for team members
-7. Added empty state message when no team members are present
-8. Added enter key support for adding members
-9. Improved button states and transitions
-10. Made the spin button full width
-11. Added loading state to the spin button
-
-The development server is running, and you can test the new layout. Let me know if you'd like any adjustments t

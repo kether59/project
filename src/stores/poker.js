@@ -14,8 +14,9 @@ export const usePokerStore = defineStore('poker', {
   
   actions: {
     createSession(feature, name) {
+      const sessionId = uuidv4()
       const session = {
-        id: uuidv4(),
+        id: sessionId,
         feature,
         name,
         createdAt: new Date(),
@@ -24,6 +25,8 @@ export const usePokerStore = defineStore('poker', {
       }
       this.sessions.push(session)
       this.currentSession = session
+      Cookies.set('currentSessionId', sessionId, { expires: 7 })
+      return session
     },
     
     setPlayer(name) {
@@ -31,6 +34,18 @@ export const usePokerStore = defineStore('poker', {
       this.playerName = name
       Cookies.set('playerId', this.playerId, { expires: 7 })
       Cookies.set('playerName', name, { expires: 7 })
+    },
+
+    loadSession() {
+      const sessionId = Cookies.get('currentSessionId')
+      if (sessionId) {
+        const session = this.sessions.find(s => s.id === sessionId)
+        if (session) {
+          this.currentSession = session
+          return session
+        }
+      }
+      return null
     },
     
     vote(sessionId, value) {
@@ -52,6 +67,11 @@ export const usePokerStore = defineStore('poker', {
           finalVotes: { ...this.votes[sessionId] }
         })
       }
+    },
+
+    leaveSession() {
+      this.currentSession = null
+      Cookies.remove('currentSessionId')
     }
   }
 })

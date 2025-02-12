@@ -1,35 +1,105 @@
 <template>
-  <div class="min-h-screen bg-gray-100">
-    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+  <div class="min-h-screen bg-gray-100 p-4">
+    <div class="max-w-full mx-auto">
       <!-- Navigation -->
-      <div class="mb-6">
+      <div class="mb-6 flex justify-between items-center">
         <router-link to="/" class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
           <span class="mr-2">←</span> Back to Home
         </router-link>
-      </div>
-
-      <!-- Player Registration -->
-      <div v-if="!store.playerName" class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-semibold mb-4">Join Session</h2>
-        <div class="flex gap-4">
-          <input 
-            v-model="newPlayerName" 
-            class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            placeholder="Your name"
-          >
-          <button 
-            @click="registerPlayer"
-            class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-          >
-            Join
-          </button>
+        <div class="text-gray-600">
+          Logged in as: <span class="font-semibold">{{ userStore.username }}</span>
         </div>
       </div>
 
       <!-- Session Management -->
-      <div v-else>
-        <div v-if="!store.currentSession" class="bg-white rounded-lg shadow p-6 mb-6">
+      <div>
+        <!-- Current Session Display -->
+        <div v-if="store.currentSession" class="space-y-6">
+          <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex justify-between items-center mb-6">
+              <div>
+                <h2 class="text-xl font-semibold">Current Session: {{ store.currentSession.name }}</h2>
+                <p class="text-gray-600">{{ store.currentSession.feature }}</p>
+              </div>
+              <button 
+                @click="leaveSession"
+                class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+              >
+                Leave Session
+              </button>
+            </div>
+            
+            <!-- Votes Table -->
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Player
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Vote
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr v-for="(vote, playerId) in store.votes[store.currentSession.id]" :key="playerId">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm font-medium text-gray-900">{{ vote.playerName }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm text-gray-900">
+                        <span v-if="store.currentSession.revealed">{{ vote.value }}</span>
+                        <span v-else class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          Voted
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <button 
+              @click="revealVotes"
+              class="mt-6 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+            >
+              Reveal Votes
+            </button>
+          </div>
+
+          <!-- Voting Cards -->
+          <div class="bg-white rounded-lg shadow p-6">
+            <PokerCards title="Choose your estimate" @card-selected="vote" />
+          </div>
+        </div>
+
+        <!-- Session Selection -->
+        <div v-else class="bg-white rounded-lg shadow p-6 mb-6">
           <div class="grid grid-cols-1 gap-6">
+            <!-- Join Existing Session -->
+            <div v-if="store.sessions.length > 0">
+              <h2 class="text-xl font-semibold mb-4">Available Sessions</h2>
+              <div class="space-y-4">
+                <div v-for="session in store.sessions" :key="session.id"
+                  class="p-4 bg-gray-50 rounded-lg"
+                >
+                  <div class="flex justify-between items-center">
+                    <div>
+                      <h3 class="font-semibold">{{ session.name }}</h3>
+                      <p class="text-sm text-gray-600">{{ session.feature }}</p>
+                    </div>
+                    <button 
+                      @click="joinSession(session)"
+                      class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                    >
+                      Join
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Create New Session -->
             <div>
               <h2 class="text-xl font-semibold mb-4">Create New Session</h2>
@@ -52,72 +122,7 @@
                 </button>
               </div>
             </div>
-
-            <!-- Join Existing Session -->
-            <div>
-              <h2 class="text-xl font-semibold mb-4">Join Existing Session</h2>
-              <div class="space-y-4">
-                <div v-for="session in store.sessions" :key="session.id"
-                  class="p-4 bg-gray-50 rounded-lg">
-                  <div class="flex justify-between items-center">
-                    <div>
-                      <h3 class="font-semibold">{{ session.name }}</h3>
-                      <p class="text-sm text-gray-600">{{ session.feature }}</p>
-                    </div>
-                    <button 
-                      @click="joinSession(session)"
-                      class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-                    >
-                      Join
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
-        </div>
-
-        <!-- Current Session -->
-        <div v-if="store.currentSession" class="bg-white rounded-lg shadow p-6 mb-6">
-          <div class="flex justify-between items-center mb-6">
-            <div>
-              <h2 class="text-xl font-semibold">{{ store.currentSession.name }}</h2>
-              <p class="text-gray-600">{{ store.currentSession.feature }}</p>
-            </div>
-            <button 
-              @click="leaveSession"
-              class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
-            >
-              Leave Session
-            </button>
-          </div>
-          
-          <!-- Connected Players -->
-          <div class="mb-6">
-            <h3 class="text-lg font-semibold mb-2">Connected Players</h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div v-for="(vote, playerId) in store.votes[store.currentSession.id]" 
-                :key="playerId"
-                class="p-4 bg-gray-50 rounded-lg text-center"
-              >
-                <div class="font-semibold">{{ vote.playerName }}</div>
-                <div class="mt-2">
-                  <span v-if="store.currentSession.revealed" class="text-lg">{{ vote.value }}</span>
-                  <span v-else class="text-green-600">✓</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Voting Cards -->
-          <PokerCards title="Choose your estimate" @card-selected="vote" />
-
-          <button 
-            @click="revealVotes"
-            class="mt-6 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-          >
-            Reveal Votes
-          </button>
         </div>
 
         <!-- History -->
@@ -145,20 +150,20 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { usePokerStore } from '../stores/poker'
+import { useUserStore } from '../stores/user'
 import PokerCards from './poker/component/PokerCards.vue'
+import Cookies from 'js-cookie'
 
 const store = usePokerStore()
-const newPlayerName = ref('')
+const userStore = useUserStore()
 const newFeature = ref('')
 const sessionName = ref('')
 
-const registerPlayer = () => {
-  if (newPlayerName.value.trim()) {
-    store.setPlayer(newPlayerName.value.trim())
-  }
-}
+onMounted(() => {
+  store.loadSession()
+})
 
 const createSession = () => {
   if (newFeature.value.trim() && sessionName.value.trim()) {
@@ -170,10 +175,11 @@ const createSession = () => {
 
 const joinSession = (session) => {
   store.currentSession = session
+  Cookies.set('currentSessionId', session.id, { expires: 7 })
 }
 
 const leaveSession = () => {
-  store.currentSession = null
+  store.leaveSession()
 }
 
 const vote = (value) => {

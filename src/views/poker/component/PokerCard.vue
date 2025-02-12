@@ -25,30 +25,29 @@ export default {
 
 <style scoped>
 .poker-card {
-  position: relative;
-  height: 140px;
+  width: 80px;
+  height: 120px;
   background: white;
   border: 1px solid #e5e7eb;
-  border-radius: 10px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: bold;
   color: #1f2937;
   transition: all 0.2s;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  margin: 10px;
 }
 
 .poker-card::before {
   content: '';
   position: absolute;
-  top: 8px;
-  left: 8px;
-  right: 8px;
-  bottom: 8px;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
   border: 2px solid #e5e7eb;
   border-radius: 6px;
   pointer-events: none;
@@ -68,7 +67,7 @@ export default {
 }
 
 .card-value {
-  font-size: 2rem;
+  font-size: 1.25rem;
   font-weight: bold;
 }
 </style>
