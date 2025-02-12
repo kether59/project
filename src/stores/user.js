@@ -37,8 +37,32 @@ export const useUserStore = defineStore('user', {
       return !!this.username;
     },
 
+    loadSessionFromStorage() {
+      const storedUsername = localStorage.getItem('username');
+      const storedSessionId = localStorage.getItem('sessionId');
+      const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
+
+      if (storedUsername && storedSessionId) {
+      this.username = storedUsername;
+      this.sessionId = storedSessionId;
+      this.users = storedUsers;
+      }
+    },
+
+    saveSessionToStorage() {
+      localStorage.setItem('username', this.username);
+      localStorage.setItem('sessionId', this.sessionId);
+      localStorage.setItem('users', JSON.stringify(this.users));
+    },
+
+    clearSessionFromStorage() {
+      localStorage.removeItem('username');
+      localStorage.removeItem('sessionId');
+      localStorage.removeItem('users');
+    },
+    
     getAllUsers() {
-      return this.users;
+      return JSON.parse(sessionStorage.getItem('users') || '[]');
     }
   }
 })

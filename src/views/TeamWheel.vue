@@ -92,7 +92,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useSessionStorage } from '@vueuse/core'
 import { useWheelStore } from '../stores/wheel'
 import { useUserStore } from '../stores/user'
 import confetti from 'canvas-confetti'
@@ -103,6 +104,13 @@ const userStore = useUserStore()
 const newMember = ref('')
 const wheelRef = ref(null)
 const MIN_SEGMENTS = 8
+
+const username = ref(sessionStorage.getItem('username') || '')
+
+onMounted(() => {
+  const username = useSessionStorage('username', 'Guest')
+  addMember(username.value)
+})
 
 const getRandomColor = () => {
   const colors = [
@@ -128,9 +136,9 @@ const wheelSlices = computed(() => {
   return slices
 })
 
-const addMember = () => {
-  if (newMember.value.trim()) {
-    store.addTeammate(newMember.value.trim())
+const addMember = (name) => {
+  if (name.trim()) {
+    store.addTeammate(name.trim())
     newMember.value = ''
   }
 }

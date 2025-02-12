@@ -25,9 +25,10 @@
   <div v-else>
     <button 
       @click="logout"
+      :title="'Logged in as ' + username"
       class="absolute top-4 right-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
     >
-      Logout
+      Logout ({{   username   }})
     </button>
     <router-view></router-view>
   </div>
@@ -44,13 +45,14 @@ const userStore = useUserStore()
 const wheelStore = useWheelStore()
 const pokerStore = usePokerStore()
 const router = useRouter()
-const username = ref('')
+const username = ref(sessionStorage.getItem('username') || '')
 
 const login = () => {
   if (username.value.trim()) {
     userStore.login(username.value.trim())
     pokerStore.setPlayer(username.value.trim())
     wheelStore.addTeammate(username.value.trim())
+    sessionStorage.setItem('username', username.value.trim())
     router.push('/')
   }
 }
@@ -59,6 +61,7 @@ const logout = () => {
   userStore.logout()
   pokerStore.removePlayer(username.value.trim())
   wheelStore.removeTeammate(username.value.trim())
+  sessionStorage.removeItem('username')
   username.value = ''
   router.push('/')
 }
