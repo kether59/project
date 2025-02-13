@@ -1,9 +1,9 @@
-version: '3'
+version: "3.9"  # ou version plus récente
 services:
   app:
     build: .
     ports:
       - "5173:5173"
     volumes:
-      - .:/app
-      - /app/node_modules
+      - .:/app  # Volume pour le code source
+      - /app/node_modules # Volume pour node_modules

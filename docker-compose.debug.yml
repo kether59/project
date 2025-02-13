@@ -1,14 +1,9 @@
-version: '3.4'
-
+version: "3.9"  # ou version plus récente
 services:
-  teamtools:
-    image: teamtools
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    environment:
-      NODE_ENV: development
+  app:
+    build: .
     ports:
-      - 3000:3000
-      - 9229:9229
-    command: ["node", "--inspect=0.0.0.0:9229", "index.js"]
+      - "5173:5173"
+    volumes:
+      - .:/app  # Volume pour le code source
+      - /app/node_modules # Volume pour node_modules

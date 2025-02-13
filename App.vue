@@ -13,16 +13,16 @@
 
 <script>
 import { ref } from 'vue';
-import { useUserSession } from './stores/user.js';
+import { useUserStore } from './stores/user.js';
 
 export default {
   setup() {
-    const { userSessions, addUserSession, clearUserSessions } = useUserSession();
+    const { userSession } = useUserStore();
 
     return {
-      userSessions,
-      addUserSession,
-      clearUserSessions,
+      userSession,
+      addUserSession: userSession.addUserSession,
+      clearUserSessions: userSession.clearUserSessions,
     };
   },
 };

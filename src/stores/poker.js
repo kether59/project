@@ -20,7 +20,7 @@ export const usePokerStore = defineStore('poker', {
         feature,
         name,
         createdAt: new Date(),
-        players: [], // Track players in the session
+        players: [],
         votes: {},
         revealed: false
       }
